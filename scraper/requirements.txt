@@ -1,0 +1,6 @@
+python-jobspy
+supabase
+requests
+python-dotenv
+beautifulsoup4
+pandas
