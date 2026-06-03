@@ -11,18 +11,38 @@ log = logging.getLogger("scraper.supabase")
 
 
 def get_client():
-    """Create a Supabase client from env vars, or None if not configured."""
-    url = os.environ.get("SUPABASE_URL")
-    key = os.environ.get("SUPABASE_SERVICE_KEY")
+    """Create a Supabase client from env vars, or None if not configured.
+
+    Cleans common copy-paste mistakes in the SUPABASE_URL secret (surrounding
+    whitespace/newlines, a trailing slash) and validates the scheme so the
+    failure mode is a clear log line instead of an opaque "Invalid URL".
+    """
+    url = (os.environ.get("SUPABASE_URL") or "").strip().rstrip("/")
+    key = (os.environ.get("SUPABASE_SERVICE_KEY") or "").strip()
+
     if not url or not key:
         log.error("SUPABASE_URL / SUPABASE_SERVICE_KEY not set — cannot upload.")
         return None
+
+    if not url.startswith("https://") or not url.endswith(".supabase.co"):
+        log.error(
+            "SUPABASE_URL looks invalid: %r. It must be exactly your project "
+            "URL, e.g. https://xxxx.supabase.co (no trailing slash, no path).",
+            url,
+        )
+        return None
+
     try:
         from supabase import create_client
     except ImportError:
         log.error("supabase package not installed — run pip install supabase")
         return None
-    return create_client(url, key)
+
+    try:
+        return create_client(url, key)
+    except Exception as e:  # noqa: BLE001
+        log.error("Failed to create Supabase client (%s). Check your secrets.", e)
+        return None
 
 
 def upsert_jobs(client, jobs: list[dict]) -> int:
