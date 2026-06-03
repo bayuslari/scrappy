@@ -1,5 +1,6 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { isAllowedEmail } from "@/lib/auth";
 
 type CookieToSet = { name: string; value: string; options: CookieOptions };
 
@@ -33,17 +34,22 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
+  // A user only counts as "in" if they're authenticated AND on the allowlist.
+  const allowed = !!user && isAllowedEmail(user.email);
+
   const { pathname } = request.nextUrl;
   const isPublic =
     pathname.startsWith("/login") || pathname.startsWith("/auth");
 
-  if (!user && !isPublic) {
+  if (!allowed && !isPublic) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
+    // Signal "authenticated but not authorized" so the login page can explain.
+    if (user) url.searchParams.set("denied", "1");
     return NextResponse.redirect(url);
   }
 
-  if (user && pathname.startsWith("/login")) {
+  if (allowed && pathname.startsWith("/login")) {
     const url = request.nextUrl.clone();
     url.pathname = "/dashboard";
     return NextResponse.redirect(url);

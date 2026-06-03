@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { isAllowedEmail } from "@/lib/auth";
 import { STATUSES, type JobStatus } from "@/lib/types";
 
 // Update a job's status / notes. RLS + this session check ensure only the
@@ -13,7 +14,7 @@ export async function PATCH(
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) {
+  if (!user || !isAllowedEmail(user.email)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

@@ -1,9 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
+  );
+}
+
+function LoginForm() {
+  const params = useSearchParams();
+  const denied = params.get("denied") === "1";
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -34,6 +45,15 @@ export default function LoginPage() {
         <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
           Sign in with a magic link sent to your email.
         </p>
+
+        {denied && !sent && (
+          <div
+            role="alert"
+            className="mt-4 rounded-lg bg-red-50 p-3 text-sm text-red-700 dark:bg-red-950 dark:text-red-300"
+          >
+            This account isn&apos;t authorized to access this dashboard.
+          </div>
+        )}
 
         {sent ? (
           <div className="mt-6 rounded-lg bg-emerald-50 p-4 text-sm text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
