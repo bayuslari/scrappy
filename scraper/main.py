@@ -13,6 +13,7 @@ Environment (see .env.example):
     ADZUNA_APP_ID, ADZUNA_APP_KEY          (optional — Adzuna skipped if unset)
 """
 
+import os
 import sys
 import logging
 from collections import Counter
@@ -96,6 +97,12 @@ def main() -> int:
 
     client = get_client()
     if client is None:
+        # If Supabase secrets are present but the client failed, fail loudly so
+        # the workflow goes red instead of silently uploading nothing.
+        if os.environ.get("SUPABASE_URL"):
+            log.error("Supabase is configured but the client could not be created "
+                      "— see the errors above (check your SUPABASE_URL secret).")
+            return 1
         log.warning("Supabase not configured — printing top picks instead of uploading.")
         for j in sorted(jobs, key=lambda x: x["tech_score"], reverse=True)[:10]:
             print(f"  [{j['sponsorship_likelihood']}] {j['title']} @ {j['company']} "
