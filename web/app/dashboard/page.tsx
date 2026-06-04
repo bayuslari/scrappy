@@ -23,8 +23,16 @@ export default async function DashboardPage({
   const query = filtersToQuery(filters);
 
   // Load only the first page server-side; the rest lazy-loads on scroll.
-  const { data, error } = await buildJobsQuery(supabase, filters, 0, PAGE_SIZE - 1);
+  // `withCount` asks Postgres for the total number of matching rows.
+  const { data, error, count } = await buildJobsQuery(
+    supabase,
+    filters,
+    0,
+    PAGE_SIZE - 1,
+    true,
+  );
   const jobs = (data ?? []) as Job[];
+  const total = count ?? jobs.length;
 
   return (
     <main id="main" className="mx-auto max-w-5xl px-4 py-6">
@@ -32,7 +40,7 @@ export default async function DashboardPage({
         <div className="min-w-0">
           <h1 className="text-2xl font-semibold">Jobs</h1>
           <p className="text-sm text-muted-foreground">
-            {jobs.length >= PAGE_SIZE ? `${PAGE_SIZE}+ shown` : `${jobs.length} result${jobs.length === 1 ? "" : "s"}`}
+            {total} result{total === 1 ? "" : "s"}
           </p>
         </div>
         <div className="flex shrink-0 items-center gap-2">
