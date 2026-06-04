@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -7,6 +6,9 @@ import type { Job } from "@/lib/types";
 import SponsorBadge from "@/components/SponsorBadge";
 import TechBadge from "@/components/TechBadge";
 import JobEditor from "@/components/JobEditor";
+import BackLink from "@/components/BackLink";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 export const dynamic = "force-dynamic";
 
@@ -38,16 +40,11 @@ export default async function JobDetailPage({
 
   return (
     <main id="main" className="mx-auto max-w-3xl px-4 py-6">
-      <Link
-        href="/dashboard"
-        className="text-sm text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
-      >
-        ← Back to jobs
-      </Link>
+      <BackLink />
 
       <div className="mt-3 grid gap-4 md:grid-cols-[1fr_280px]">
         <div>
-          <div className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
+          <Card className="p-5">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h1 className="text-xl font-semibold dark:text-slate-100">{job.title}</h1>
@@ -78,19 +75,16 @@ export default async function JobDetailPage({
             )}
 
             {job.url && (
-              <a
-                href={job.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-4 inline-flex rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-700 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200"
-              >
-                Open original posting ↗
-              </a>
+              <Button asChild className="mt-4">
+                <a href={job.url} target="_blank" rel="noopener noreferrer">
+                  Open original posting ↗
+                </a>
+              </Button>
             )}
-          </div>
+          </Card>
 
           {job.description && (
-            <div className="mt-4 rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
+            <Card className="mt-4 p-5">
               <h2 className="mb-3 text-sm font-semibold text-slate-700 dark:text-slate-200">
                 Description
               </h2>
@@ -99,7 +93,7 @@ export default async function JobDetailPage({
                   {job.description}
                 </ReactMarkdown>
               </div>
-            </div>
+            </Card>
           )}
         </div>
 

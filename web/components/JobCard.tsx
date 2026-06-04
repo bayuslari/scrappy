@@ -3,6 +3,7 @@ import type { Job } from "@/lib/types";
 import SponsorBadge from "./SponsorBadge";
 import StatusBadge from "./StatusBadge";
 import TechBadge from "./TechBadge";
+import { Card } from "@/components/ui/card";
 
 function formatSalary(job: Job): string | null {
   const { salary_min, salary_max, salary_currency } = job;
@@ -17,10 +18,8 @@ function formatSalary(job: Job): string | null {
 export default function JobCard({ job }: { job: Job }) {
   const salary = formatSalary(job);
   return (
-    <Link
-      href={`/dashboard/${job.id}`}
-      className="block rounded-xl border border-slate-200 bg-white p-4 transition hover:border-slate-300 hover:shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:hover:border-slate-700"
-    >
+    <Link href={`/dashboard/${job.id}`} className="block">
+      <Card className="p-4 transition hover:border-slate-300 hover:shadow-md dark:hover:border-slate-700">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <h3 className="truncate font-medium text-slate-900 dark:text-slate-100">
@@ -54,6 +53,7 @@ export default function JobCard({ job }: { job: Job }) {
           {job.tech_hits}
         </p>
       )}
+      </Card>
     </Link>
   );
 }

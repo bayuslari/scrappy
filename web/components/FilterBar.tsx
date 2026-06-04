@@ -3,6 +3,14 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { STATUSES, SPONSORSHIPS } from "@/lib/types";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const COUNTRIES = ["AU", "NZ", "UK"];
 const SORTS = [
@@ -10,6 +18,10 @@ const SORTS = [
   { value: "tech_score", label: "Tech score" },
   { value: "salary_max", label: "Salary" },
 ];
+
+// Radix Select can't use "" as an item value, so "all" is the sentinel for
+// "no filter" and maps back to an empty query param.
+const ALL = "all";
 
 export default function FilterBar({ countries }: { countries: string[] }) {
   const router = useRouter();
@@ -24,7 +36,7 @@ export default function FilterBar({ countries }: { countries: string[] }) {
     const t = setTimeout(() => {
       const next = new URLSearchParams(params.toString());
       if (q) next.set("q", q); else next.delete("q");
-      router.push(`/dashboard?${next.toString()}`);
+      router.push(`/dashboard?${next.toString()}`, { scroll: false });
     }, 300);
     return () => clearTimeout(t);
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -33,97 +45,110 @@ export default function FilterBar({ countries }: { countries: string[] }) {
   const update = useCallback(
     (key: string, value: string) => {
       const next = new URLSearchParams(params.toString());
-      if (value) next.set(key, value);
+      if (value && value !== ALL) next.set(key, value);
       else next.delete(key);
-      router.push(`/dashboard?${next.toString()}`);
+      router.push(`/dashboard?${next.toString()}`, { scroll: false });
     },
     [params, router],
   );
 
-  // Selects: full width on mobile, auto on larger screens.
-  const selectCls =
-    "w-full sm:w-auto rounded-lg border border-slate-300 bg-white px-2.5 py-2 text-sm text-slate-900 outline-none focus:border-slate-900 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:focus:border-slate-400";
-
   return (
     <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center">
-      <input
-        id="filter-q"
+      <Input
         type="search"
         value={q}
         onChange={(e) => setQ(e.target.value)}
         placeholder="Search title / company…"
-        className={`${selectCls} col-span-2 sm:min-w-[200px] sm:flex-1 placeholder:text-slate-400 dark:placeholder:text-slate-500`}
+        className="col-span-2 sm:w-56 sm:flex-1"
         aria-label="Search jobs by title or company"
       />
 
-      <select
-        value={params.get("country") ?? ""}
-        onChange={(e) => update("country", e.target.value)}
-        className={selectCls}
-        aria-label="Filter by country"
+      <Select
+        value={params.get("country") ?? ALL}
+        onValueChange={(v) => update("country", v)}
       >
-        <option value="">All countries</option>
-        {countryOpts.map((c) => (
-          <option key={c} value={c}>{c}</option>
-        ))}
-      </select>
+        <SelectTrigger className="w-full sm:w-[140px]" aria-label="Filter by country">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value={ALL}>All countries</SelectItem>
+          {countryOpts.map((c) => (
+            <SelectItem key={c} value={c}>{c}</SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
 
-      <select
-        value={params.get("sponsorship") ?? ""}
-        onChange={(e) => update("sponsorship", e.target.value)}
-        className={selectCls}
-        aria-label="Filter by sponsorship likelihood"
+      <Select
+        value={params.get("sponsorship") ?? ALL}
+        onValueChange={(v) => update("sponsorship", v)}
       >
-        <option value="">All sponsorship</option>
-        {SPONSORSHIPS.map((s) => (
-          <option key={s} value={s} className="capitalize">{s}</option>
-        ))}
-      </select>
+        <SelectTrigger className="w-full sm:w-[150px] capitalize" aria-label="Filter by sponsorship likelihood">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value={ALL}>All sponsorship</SelectItem>
+          {SPONSORSHIPS.map((s) => (
+            <SelectItem key={s} value={s} className="capitalize">{s}</SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
 
-      <select
-        value={params.get("status") ?? ""}
-        onChange={(e) => update("status", e.target.value)}
-        className={selectCls}
-        aria-label="Filter by status"
+      <Select
+        value={params.get("status") ?? ALL}
+        onValueChange={(v) => update("status", v)}
       >
-        <option value="">All statuses</option>
-        {STATUSES.map((s) => (
-          <option key={s} value={s} className="capitalize">{s}</option>
-        ))}
-      </select>
+        <SelectTrigger className="w-full sm:w-[140px] capitalize" aria-label="Filter by status">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value={ALL}>All statuses</SelectItem>
+          {STATUSES.map((s) => (
+            <SelectItem key={s} value={s} className="capitalize">{s}</SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
 
-      <select
-        value={params.get("minTech") ?? ""}
-        onChange={(e) => update("minTech", e.target.value)}
-        className={selectCls}
-        aria-label="Filter by minimum tech score"
+      <Select
+        value={params.get("minTech") ?? ALL}
+        onValueChange={(v) => update("minTech", v)}
       >
-        <option value="">Any tech score</option>
-        {[2, 4, 6, 8].map((n) => (
-          <option key={n} value={String(n)}>tech ≥ {n}</option>
-        ))}
-      </select>
+        <SelectTrigger className="w-full sm:w-[140px]" aria-label="Filter by minimum tech score">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value={ALL}>Any tech score</SelectItem>
+          {[2, 4, 6, 8].map((n) => (
+            <SelectItem key={n} value={String(n)}>tech ≥ {n}</SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
 
-      <select
-        value={params.get("hasSalary") ?? ""}
-        onChange={(e) => update("hasSalary", e.target.value)}
-        className={selectCls}
-        aria-label="Filter by salary availability"
+      <Select
+        value={params.get("hasSalary") ?? ALL}
+        onValueChange={(v) => update("hasSalary", v)}
       >
-        <option value="">Any salary</option>
-        <option value="yes">Has salary</option>
-      </select>
+        <SelectTrigger className="w-full sm:w-[130px]" aria-label="Filter by salary availability">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value={ALL}>Any salary</SelectItem>
+          <SelectItem value="yes">Has salary</SelectItem>
+        </SelectContent>
+      </Select>
 
-      <select
+      <Select
         value={params.get("sort") ?? "date_posted"}
-        onChange={(e) => update("sort", e.target.value)}
-        className={selectCls}
-        aria-label="Sort jobs"
+        onValueChange={(v) => update("sort", v)}
       >
-        {SORTS.map((s) => (
-          <option key={s.value} value={s.value}>Sort: {s.label}</option>
-        ))}
-      </select>
+        <SelectTrigger className="w-full sm:w-[150px]" aria-label="Sort jobs">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          {SORTS.map((s) => (
+            <SelectItem key={s.value} value={s.value}>Sort: {s.label}</SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
     </div>
   );
 }
