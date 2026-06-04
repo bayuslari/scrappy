@@ -3,6 +3,53 @@
 @tailwind utilities;
 
 @layer base {
+  /* shadcn/ui design tokens, mapped to the existing slate palette so the look
+     stays consistent. HSL channels (no hsl() wrapper) per shadcn convention. */
+  :root {
+    --background: 210 40% 98%;        /* slate-50 */
+    --foreground: 222 47% 11%;        /* slate-900 */
+    --card: 0 0% 100%;                /* white */
+    --card-foreground: 222 47% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    --primary: 222 47% 11%;          /* slate-900 */
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;        /* slate-100 */
+    --secondary-foreground: 222 47% 11%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%; /* slate-500 */
+    --accent: 210 40% 96%;
+    --accent-foreground: 222 47% 11%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214 32% 91%;           /* slate-200 */
+    --input: 214 32% 91%;
+    --ring: 222 47% 11%;
+    --radius: 0.65rem;
+  }
+
+  .dark {
+    --background: 222 47% 7%;         /* slate-950-ish */
+    --foreground: 210 40% 98%;
+    --card: 222 47% 11%;             /* slate-900 */
+    --card-foreground: 210 40% 98%;
+    --popover: 222 47% 11%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222 47% 11%;
+    --secondary: 217 33% 17%;        /* slate-800 */
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%; /* slate-400 */
+    --accent: 217 33% 17%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217 33% 20%;
+    --input: 217 33% 20%;
+    --ring: 213 27% 84%;
+  }
+
   html {
     font-family: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
       "Segoe UI", Roboto, Helvetica, Arial, sans-serif;

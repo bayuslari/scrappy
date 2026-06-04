@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Moon, Sun } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 // Light / dark toggle. Persists choice to localStorage; the inline script in
 // the layout applies it before paint to avoid a flash.
@@ -21,15 +23,19 @@ export default function ThemeToggle() {
   }
 
   return (
-    <button
+    <Button
       type="button"
+      variant="outline"
+      size="icon"
       onClick={toggle}
       aria-label={mounted ? (dark ? "Switch to light mode" : "Switch to dark mode") : "Toggle theme"}
       aria-pressed={mounted ? dark : undefined}
-      className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-300 bg-white text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
     >
-      {/* Sun (shown in dark mode → click for light) / Moon (light mode) */}
-      <span aria-hidden="true">{mounted && dark ? "☀️" : "🌙"}</span>
-    </button>
+      {mounted && dark ? (
+        <Sun className="h-4 w-4" aria-hidden="true" />
+      ) : (
+        <Moon className="h-4 w-4" aria-hidden="true" />
+      )}
+    </Button>
   );
 }
