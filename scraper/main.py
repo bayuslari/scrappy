@@ -29,7 +29,7 @@ from config import SEARCH_QUERIES, COUNTRIES
 from sources.adzuna import scrape_adzuna, is_configured as adzuna_configured
 from sources.jobspy_scraper import scrape_jobspy, scrape_seek
 from utils.dedup import dedup_and_enrich
-from utils.supabase_client import get_client, upsert_jobs
+from utils.supabase_client import get_client, upsert_jobs, get_skills
 
 logging.basicConfig(
     level=logging.INFO,
@@ -81,7 +81,14 @@ def main() -> int:
     raw = collect()
     log.info(f"Total raw rows: {len(raw)}")
 
-    jobs = dedup_and_enrich(raw)
+    # Create the client up front so we can read the user's skills profile and
+    # use it to boost tech scoring before enriching.
+    client = get_client()
+    extra_skills = get_skills(client)
+    if extra_skills:
+        log.info(f"Boosting tech score with {len(extra_skills)} profile skill(s).")
+
+    jobs = dedup_and_enrich(raw, extra_skills=extra_skills)
     log.info(f"After dedup + scoring: {len(jobs)}")
 
     if not jobs:
@@ -95,7 +102,6 @@ def main() -> int:
         print(f"  {label:<10}: {by_sponsor.get(label, 0)}")
     print("=" * 50 + "\n")
 
-    client = get_client()
     if client is None:
         # If Supabase secrets are present but the client failed, fail loudly so
         # the workflow goes red instead of silently uploading nothing.

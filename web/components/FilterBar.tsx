@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { STATUSES, SPONSORSHIPS } from "@/lib/types";
 
 const COUNTRIES = ["AU", "NZ", "UK"];
@@ -17,6 +17,19 @@ export default function FilterBar({ countries }: { countries: string[] }) {
 
   const countryOpts = countries.length ? countries : COUNTRIES;
 
+  // Controlled search with 300 ms debounce — fixes defaultValue reset bug.
+  const [q, setQ] = useState(params.get("q") ?? "");
+  useEffect(() => { setQ(params.get("q") ?? ""); }, [params]);
+  useEffect(() => {
+    const t = setTimeout(() => {
+      const next = new URLSearchParams(params.toString());
+      if (q) next.set("q", q); else next.delete("q");
+      router.push(`/dashboard?${next.toString()}`);
+    }, 300);
+    return () => clearTimeout(t);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [q]);
+
   const update = useCallback(
     (key: string, value: string) => {
       const next = new URLSearchParams(params.toString());
@@ -27,104 +40,88 @@ export default function FilterBar({ countries }: { countries: string[] }) {
     [params, router],
   );
 
+  // Selects: full width on mobile, auto on larger screens.
   const selectCls =
-    "rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-sm text-slate-900 outline-none focus:border-slate-900 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:focus:border-slate-400";
+    "w-full sm:w-auto rounded-lg border border-slate-300 bg-white px-2.5 py-2 text-sm text-slate-900 outline-none focus:border-slate-900 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:focus:border-slate-400";
 
   return (
-    <div className="flex flex-wrap items-center gap-2">
-      <label htmlFor="filter-q" className="sr-only">
-        Search jobs by title or company
-      </label>
+    <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center">
       <input
         id="filter-q"
         type="search"
-        defaultValue={params.get("q") ?? ""}
-        onChange={(e) => update("q", e.target.value)}
+        value={q}
+        onChange={(e) => setQ(e.target.value)}
         placeholder="Search title / company…"
-        className={`${selectCls} min-w-[200px] flex-1 placeholder:text-slate-400 dark:placeholder:text-slate-500`}
+        className={`${selectCls} col-span-2 sm:min-w-[200px] sm:flex-1 placeholder:text-slate-400 dark:placeholder:text-slate-500`}
+        aria-label="Search jobs by title or company"
       />
 
-      <label htmlFor="filter-country" className="sr-only">
-        Filter by country
-      </label>
       <select
-        id="filter-country"
         value={params.get("country") ?? ""}
         onChange={(e) => update("country", e.target.value)}
         className={selectCls}
+        aria-label="Filter by country"
       >
         <option value="">All countries</option>
         {countryOpts.map((c) => (
-          <option key={c} value={c}>
-            {c}
-          </option>
+          <option key={c} value={c}>{c}</option>
         ))}
       </select>
 
-      <label htmlFor="filter-sponsorship" className="sr-only">
-        Filter by sponsorship likelihood
-      </label>
       <select
-        id="filter-sponsorship"
         value={params.get("sponsorship") ?? ""}
         onChange={(e) => update("sponsorship", e.target.value)}
         className={selectCls}
+        aria-label="Filter by sponsorship likelihood"
       >
         <option value="">All sponsorship</option>
         {SPONSORSHIPS.map((s) => (
-          <option key={s} value={s} className="capitalize">
-            {s}
-          </option>
+          <option key={s} value={s} className="capitalize">{s}</option>
         ))}
       </select>
 
-      <label htmlFor="filter-status" className="sr-only">
-        Filter by status
-      </label>
       <select
-        id="filter-status"
         value={params.get("status") ?? ""}
         onChange={(e) => update("status", e.target.value)}
         className={selectCls}
+        aria-label="Filter by status"
       >
         <option value="">All statuses</option>
         {STATUSES.map((s) => (
-          <option key={s} value={s} className="capitalize">
-            {s}
-          </option>
+          <option key={s} value={s} className="capitalize">{s}</option>
         ))}
       </select>
 
-      <label htmlFor="filter-tech" className="sr-only">
-        Filter by minimum tech score
-      </label>
       <select
-        id="filter-tech"
         value={params.get("minTech") ?? ""}
         onChange={(e) => update("minTech", e.target.value)}
         className={selectCls}
+        aria-label="Filter by minimum tech score"
       >
         <option value="">Any tech score</option>
         {[2, 4, 6, 8].map((n) => (
-          <option key={n} value={String(n)}>
-            tech ≥ {n}
-          </option>
+          <option key={n} value={String(n)}>tech ≥ {n}</option>
         ))}
       </select>
 
-      <label htmlFor="filter-sort" className="sr-only">
-        Sort jobs
-      </label>
       <select
-        id="filter-sort"
+        value={params.get("hasSalary") ?? ""}
+        onChange={(e) => update("hasSalary", e.target.value)}
+        className={selectCls}
+        aria-label="Filter by salary availability"
+      >
+        <option value="">Any salary</option>
+        <option value="yes">Has salary</option>
+      </select>
+
+      <select
         value={params.get("sort") ?? "date_posted"}
         onChange={(e) => update("sort", e.target.value)}
         className={selectCls}
+        aria-label="Sort jobs"
       >
         {SORTS.map((s) => (
-          <option key={s.value} value={s.value}>
-            Sort: {s.label}
-          </option>
+          <option key={s.value} value={s.value}>Sort: {s.label}</option>
         ))}
       </select>
     </div>

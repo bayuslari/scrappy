@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Job } from "@/lib/types";
 import SponsorBadge from "./SponsorBadge";
 import StatusBadge from "./StatusBadge";
+import TechBadge from "./TechBadge";
 
 function formatSalary(job: Job): string | null {
   const { salary_min, salary_max, salary_currency } = job;
@@ -30,6 +31,11 @@ export default function JobCard({ job }: { job: Job }) {
             {job.location ? ` · ${job.location}` : ""}
             {job.country ? ` · ${job.country}` : ""}
           </p>
+          {salary && (
+            <p className="mt-0.5 text-sm font-medium text-emerald-700 dark:text-emerald-400">
+              {salary}
+            </p>
+          )}
         </div>
         <div className="flex shrink-0 flex-col items-end gap-1">
           <SponsorBadge value={job.sponsorship_likelihood} />
@@ -37,11 +43,8 @@ export default function JobCard({ job }: { job: Job }) {
         </div>
       </div>
 
-      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500 dark:text-slate-400">
-        <span className="rounded bg-slate-100 px-1.5 py-0.5 font-medium text-slate-700 dark:bg-slate-800 dark:text-slate-200">
-          tech {job.tech_score}/10
-        </span>
-        {salary && <span>{salary}</span>}
+      <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500 dark:text-slate-400">
+        <TechBadge score={job.tech_score} />
         {job.date_posted && <span>posted {job.date_posted}</span>}
         <span className="capitalize">{job.source}</span>
       </div>

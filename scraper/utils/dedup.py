@@ -42,10 +42,10 @@ _TEXT_FIELDS = {
 }
 
 
-def enrich(job: dict) -> dict:
+def enrich(job: dict, extra_skills: list[str] | None = None) -> dict:
     """Add scoring fields, sanitize text values, and trim to the DB schema."""
     text = f"{_str(job.get('description'))} {_str(job.get('title'))}"
-    scored = {**job, **score_text(text)}
+    scored = {**job, **score_text(text, extra_skills=extra_skills)}
 
     # Coerce every text column to a clean string (NaN/None → "").
     for field in _TEXT_FIELDS:
@@ -63,10 +63,11 @@ def enrich(job: dict) -> dict:
     return {k: v for k, v in scored.items() if k in _ALLOWED}
 
 
-def dedup_and_enrich(jobs: list[dict]) -> list[dict]:
+def dedup_and_enrich(jobs: list[dict], extra_skills: list[str] | None = None) -> list[dict]:
     """Dedup a list of raw job dicts within this run, then enrich each.
 
     Dedup key precedence: (source, external_id) → url → (title, company).
+    `extra_skills` boosts tech scoring for jobs matching the user's profile.
     """
     seen = set()
     out = []
@@ -87,5 +88,5 @@ def dedup_and_enrich(jobs: list[dict]) -> list[dict]:
         if not title or key in seen:
             continue
         seen.add(key)
-        out.append(enrich(job))
+        out.append(enrich(job, extra_skills=extra_skills))
     return out

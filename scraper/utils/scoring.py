@@ -68,7 +68,7 @@ _LABELS = {
 }
 
 
-def score_text(text: str) -> dict:
+def score_text(text: str, extra_skills: list[str] | None = None) -> dict:
     """Score a job's text for sponsorship likelihood and tech fit.
 
     Sponsor labels:
@@ -76,13 +76,27 @@ def score_text(text: str) -> dict:
       weak    — only soft signals (work rights / relocation mentioned)
       unknown — no mention either way
       no      — explicit exclusion (citizen only, security clearance, ...)
+
+    `extra_skills` (from the user's profile in app_settings) are matched on top
+    of the built-in TECH_KEYWORDS so jobs mentioning the user's own skills rank
+    higher. Matches are de-duplicated case-insensitively and the score stays
+    capped at TECH_SCORE_CAP.
     """
     t = (text or "").lower()
 
     pos_hits = [kw for kw in SPONSOR_POS if re.search(kw, t, re.I)]
     weak_hits = [kw for kw in SPONSOR_WEAK if re.search(kw, t, re.I)]
     neg_hits = [kw for kw in SPONSOR_NEG if re.search(kw, t, re.I)]
-    tech_hits = [kw for kw in TECH_KEYWORDS if kw in t]
+
+    hits: list[str] = []
+    seen: set[str] = set()
+    for kw in TECH_KEYWORDS + [s for s in (extra_skills or []) if s]:
+        low = kw.lower()
+        if low in seen:
+            continue
+        if low in t:
+            hits.append(kw)
+            seen.add(low)
 
     if neg_hits:
         label = _LABELS["no"]
@@ -95,6 +109,6 @@ def score_text(text: str) -> dict:
 
     return {
         "sponsorship_likelihood": label,
-        "tech_hits": ", ".join(tech_hits),
-        "tech_score": min(len(tech_hits), TECH_SCORE_CAP),
+        "tech_hits": ", ".join(hits),
+        "tech_score": min(len(hits), TECH_SCORE_CAP),
     }

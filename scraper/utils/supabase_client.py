@@ -45,6 +45,32 @@ def get_client():
         return None
 
 
+def get_skills(client) -> list[str]:
+    """Fetch the user's skills list from app_settings (id=1).
+
+    Returns a clean list of skill strings (split on comma/newline). Returns an
+    empty list if the table/row doesn't exist yet — scoring then falls back to
+    the built-in TECH_KEYWORDS only. The service-role client bypasses RLS, so
+    this read always works regardless of the owner-only policy.
+    """
+    if client is None:
+        return []
+    try:
+        res = (client.table("app_settings")
+                     .select("skills")
+                     .eq("id", 1)
+                     .limit(1)
+                     .execute())
+        rows = res.data or []
+        raw = (rows[0].get("skills") if rows else "") or ""
+    except Exception as e:  # noqa: BLE001 — table may not exist yet
+        log.info("Could not read app_settings.skills (%s) — using defaults.", e)
+        return []
+
+    parts = [p.strip() for p in raw.replace("\n", ",").split(",")]
+    return [p for p in parts if p]
+
+
 def upsert_jobs(client, jobs: list[dict]) -> int:
     """Insert new jobs, ignoring ones that already exist.
 
