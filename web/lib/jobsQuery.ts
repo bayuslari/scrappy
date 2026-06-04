@@ -53,9 +53,14 @@ export function buildJobsQuery(
   f: JobFilters,
   from: number,
   to: number,
+  withCount = false,
 ) {
   const sort = f.sort ?? "date_posted";
-  let query = supabase.from("jobs").select("*");
+  // `count: "exact"` returns the total matching rows (for the whole dataset),
+  // computed by Postgres, independent of the paginated range below.
+  let query = supabase
+    .from("jobs")
+    .select("*", withCount ? { count: "exact" } : undefined);
 
   if (f.country) query = query.eq("country", f.country);
   if (f.sponsorship) query = query.eq("sponsorship_likelihood", f.sponsorship);
