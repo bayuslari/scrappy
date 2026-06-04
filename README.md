@@ -45,6 +45,14 @@ Python scraper (GitHub Actions cron, every 12h)
 4. **Authentication → Providers → Email**: enable, with magic link. Add your
    Vercel URL (and `http://localhost:3000`) under **URL Configuration →
    Redirect URLs**, e.g. `https://your-app.vercel.app/auth/callback`.
+5. **Lock it down (important — it's a private tool):** magic-link lets anyone
+   request a sign-in link for their *own* email, so you must restrict access:
+   - **Authentication → Sign In / Providers → disable "Allow new users to sign
+     up"** so strangers can't create accounts. Add your own user via
+     **Authentication → Users → Add user**.
+   - Run `supabase/restrict_to_owner.sql` (with your email) so RLS only lets
+     *your* email read/write at the database level.
+   - Set `ALLOWED_EMAILS` in Vercel (see web app step) as an app-level guard.
 
 ### 2. Scraper (local test)
 
@@ -88,9 +96,14 @@ Deploy to a free Vercel subdomain:
 
 1. Import the repo at [vercel.com/new](https://vercel.com/new).
 2. Set **Root Directory = `web`**.
-3. Add env vars `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
+3. Add env vars:
+   - `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `ALLOWED_EMAILS` — comma-separated emails allowed to log in (e.g. just
+     yours). Bounces anyone else to the login page even if they authenticate.
 4. Deploy. The dashboard reads **live** from Supabase, so every scrape run
    appears automatically — no redeploy needed.
+
+> After changing env vars, **redeploy** (env is baked at build time).
 
 ---
 

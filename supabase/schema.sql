@@ -50,14 +50,19 @@ create index if not exists jobs_date_posted_idx            on public.jobs (date_
 -- ----------------------------------------------------------------------------
 -- The web app uses the ANON key + a logged-in session → `authenticated` role.
 -- The scraper uses the SERVICE_ROLE key, which bypasses RLS entirely.
--- Net effect: only a signed-in user (you) can read/write via the web app.
+--
+-- IMPORTANT: magic-link sign-in lets ANYONE create an account for their own
+-- email, so the policy is scoped to a single owner email. Replace
+-- 'you@example.com' below with your real login email before running.
+-- (To allow several people, use: in (lower(...)) with a list.)
 -- ----------------------------------------------------------------------------
 alter table public.jobs enable row level security;
 
 drop policy if exists "authenticated full access" on public.jobs;
-create policy "authenticated full access"
+drop policy if exists "owner only" on public.jobs;
+create policy "owner only"
     on public.jobs
     for all
     to authenticated
-    using (true)
-    with check (true);
+    using ( (auth.jwt() ->> 'email') = 'you@example.com' )
+    with check ( (auth.jwt() ->> 'email') = 'you@example.com' );

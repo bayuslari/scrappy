@@ -40,18 +40,19 @@ export default function FilterBar({ countries }: { countries: string[] }) {
     [params, router],
   );
 
+  // Selects: full width on mobile, auto on larger screens.
   const selectCls =
-    "rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-sm text-slate-900 outline-none focus:border-slate-900 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:focus:border-slate-400";
+    "w-full sm:w-auto rounded-lg border border-slate-300 bg-white px-2.5 py-2 text-sm text-slate-900 outline-none focus:border-slate-900 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:focus:border-slate-400";
 
   return (
-    <div className="flex flex-wrap items-center gap-2">
+    <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center">
       <input
         id="filter-q"
         type="search"
         value={q}
         onChange={(e) => setQ(e.target.value)}
         placeholder="Search title / company…"
-        className={`${selectCls} min-w-[200px] flex-1 placeholder:text-slate-400 dark:placeholder:text-slate-500`}
+        className={`${selectCls} col-span-2 sm:min-w-[200px] sm:flex-1 placeholder:text-slate-400 dark:placeholder:text-slate-500`}
         aria-label="Search jobs by title or company"
       />
 

@@ -4,6 +4,8 @@ import type { Job } from "@/lib/types";
 import JobCard from "@/components/JobCard";
 import FilterBar from "@/components/FilterBar";
 import SignOutButton from "@/components/SignOutButton";
+import ThemeToggle from "@/components/ThemeToggle";
+import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
@@ -46,14 +48,23 @@ export default async function DashboardPage({
 
   return (
     <main id="main" className="mx-auto max-w-5xl px-4 py-6">
-      <div className="mb-4 flex items-center justify-between">
-        <div>
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <div className="min-w-0">
           <h1 className="text-2xl font-semibold">Jobs</h1>
           <p className="text-sm text-slate-500 dark:text-slate-400">
             {jobs.length} result{jobs.length === 1 ? "" : "s"}
           </p>
         </div>
-        <SignOutButton />
+        <div className="flex shrink-0 items-center gap-2">
+          <Link
+            href="/settings"
+            className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 transition hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
+          >
+            Settings
+          </Link>
+          <ThemeToggle />
+          <SignOutButton />
+        </div>
       </div>
 
       <div className="sticky top-0 z-10 -mx-4 mb-4 bg-slate-50/90 px-4 py-3 backdrop-blur dark:bg-slate-950/90">

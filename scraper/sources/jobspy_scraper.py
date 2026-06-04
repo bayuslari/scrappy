@@ -47,17 +47,17 @@ def scrape_jobspy(query: str, location: str, country: str, jobspy_country: str) 
 
     rows = []
     for _, r in df.iterrows():
-        site = str(r.get("site", "") or "").lower() or "indeed"
-        url = r.get("job_url") or r.get("job_url_direct") or ""
-        ext = str(r.get("id", "") or url)
+        site = _clean_str(r.get("site")).lower() or "indeed"
+        url = _clean_str(r.get("job_url")) or _clean_str(r.get("job_url_direct"))
+        ext = _clean_str(r.get("id")) or url
         rows.append({
             "source": site,
             "external_id": ext,
-            "title": r.get("title", "") or "",
-            "company": r.get("company", "") or "",
-            "location": r.get("location", "") or location,
+            "title": _clean_str(r.get("title")),
+            "company": _clean_str(r.get("company")),
+            "location": _clean_str(r.get("location")) or location,
             "country": country,
-            "description": r.get("description", "") or "",
+            "description": _clean_str(r.get("description")),
             "url": url,
             "salary_min": _to_int(r.get("min_amount")),
             "salary_max": _to_int(r.get("max_amount")),
@@ -160,9 +160,22 @@ def scrape_seek(query: str, location: str = "Adelaide SA", country: str = "AU",
     return rows
 
 
+def _clean_str(v) -> str:
+    """Coerce a value to a clean string, treating pandas NaN/None as empty.
+
+    JobSpy returns a DataFrame where missing cells are float('nan'), which is
+    truthy — so `value or ""` does NOT clear it. This handles that safely.
+    """
+    if v is None:
+        return ""
+    if isinstance(v, float) and v != v:  # NaN
+        return ""
+    return str(v).strip()
+
+
 def _to_int(v):
     try:
-        if v is None:
+        if v is None or (isinstance(v, float) and v != v):  # None / NaN
             return None
         return int(float(v))
     except (ValueError, TypeError):
