@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import type { Job } from "@/lib/types";
 import JobCard from "@/components/JobCard";
@@ -25,6 +26,8 @@ export default async function DashboardPage({
   if (searchParams.status) query = query.eq("status", searchParams.status);
   if (searchParams.minTech)
     query = query.gte("tech_score", Number(searchParams.minTech));
+  if (searchParams.hasSalary === "yes")
+    query = query.not("salary_min", "is", null);
   if (searchParams.q) {
     const q = searchParams.q.replace(/[%,]/g, " ");
     query = query.or(`title.ilike.%${q}%,company.ilike.%${q}%`);
@@ -37,37 +40,37 @@ export default async function DashboardPage({
   const { data, error } = await query;
   const jobs = (data ?? []) as Job[];
 
-  // Distinct countries present, for the filter dropdown.
   const countries = Array.from(
     new Set(jobs.map((j) => j.country).filter(Boolean) as string[]),
   ).sort();
 
   return (
-    <main className="mx-auto max-w-5xl px-4 py-6">
+    <main id="main" className="mx-auto max-w-5xl px-4 py-6">
       <div className="mb-4 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold">Jobs</h1>
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-slate-500 dark:text-slate-400">
             {jobs.length} result{jobs.length === 1 ? "" : "s"}
           </p>
         </div>
         <SignOutButton />
       </div>
 
-      <div className="sticky top-0 z-10 -mx-4 mb-4 bg-slate-50/90 px-4 py-3 backdrop-blur">
-        <FilterBar countries={countries} />
+      <div className="sticky top-0 z-10 -mx-4 mb-4 bg-slate-50/90 px-4 py-3 backdrop-blur dark:bg-slate-950/90">
+        <Suspense>
+          <FilterBar countries={countries} />
+        </Suspense>
       </div>
 
       {error && (
-        <p className="rounded-lg bg-red-50 p-3 text-sm text-red-700">
+        <p className="rounded-lg bg-red-50 p-3 text-sm text-red-700 dark:bg-red-950 dark:text-red-300">
           Failed to load jobs: {error.message}
         </p>
       )}
 
       {jobs.length === 0 && !error ? (
-        <p className="rounded-xl border border-dashed border-slate-300 p-8 text-center text-sm text-slate-500">
-          No jobs match these filters yet. Run the scraper to populate the
-          database.
+        <p className="rounded-xl border border-dashed border-slate-300 p-8 text-center text-sm text-slate-500 dark:border-slate-700 dark:text-slate-400">
+          No jobs match these filters yet.
         </p>
       ) : (
         <div className="grid gap-3">
