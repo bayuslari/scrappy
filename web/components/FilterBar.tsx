@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { STATUSES, SPONSORSHIPS } from "@/lib/types";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -51,6 +52,9 @@ export default function FilterBar({ countries }: { countries: string[] }) {
     },
     [params, router],
   );
+
+  const remote = params.get("remote") === "yes";
+  const relocation = params.get("relocation") === "yes";
 
   return (
     <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center">
@@ -135,6 +139,28 @@ export default function FilterBar({ countries }: { countries: string[] }) {
           <SelectItem value="yes">Has salary</SelectItem>
         </SelectContent>
       </Select>
+
+      <Button
+        type="button"
+        size="sm"
+        variant={remote ? "default" : "outline"}
+        aria-pressed={remote}
+        onClick={() => update("remote", remote ? "" : "yes")}
+        className="w-full sm:w-auto"
+      >
+        🌐 Remote
+      </Button>
+
+      <Button
+        type="button"
+        size="sm"
+        variant={relocation ? "default" : "outline"}
+        aria-pressed={relocation}
+        onClick={() => update("relocation", relocation ? "" : "yes")}
+        className="w-full sm:w-auto"
+      >
+        ✈️ Relocation
+      </Button>
 
       <Select
         value={params.get("sort") ?? "date_posted"}
