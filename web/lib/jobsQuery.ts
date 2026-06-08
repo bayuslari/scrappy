@@ -10,6 +10,8 @@ export type JobFilters = {
   status?: string;
   minTech?: string;
   hasSalary?: string;
+  remote?: string;
+  relocation?: string;
   q?: string;
   sort?: string;
 };
@@ -20,6 +22,8 @@ const FILTER_KEYS: (keyof JobFilters)[] = [
   "status",
   "minTech",
   "hasSalary",
+  "remote",
+  "relocation",
   "q",
   "sort",
 ];
@@ -67,6 +71,11 @@ export function buildJobsQuery(
   if (f.status) query = query.eq("status", f.status);
   if (f.minTech) query = query.gte("tech_score", Number(f.minTech));
   if (f.hasSalary === "yes") query = query.not("salary_min", "is", null);
+  // Remote: the word shows up in the location or the title.
+  if (f.remote === "yes")
+    query = query.or("location.ilike.%remote%,title.ilike.%remote%");
+  // Relocation: mentioned in the job description.
+  if (f.relocation === "yes") query = query.ilike("description", "%relocation%");
   if (f.q) {
     const q = f.q.replace(/[%,]/g, " ");
     query = query.or(`title.ilike.%${q}%,company.ilike.%${q}%`);
