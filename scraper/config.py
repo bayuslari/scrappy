@@ -54,3 +54,13 @@ RESULTS_EACH = 25       # results per query per site (keep modest to avoid block
 MAX_AGE_DAYS = 30       # only jobs posted within this many days
 DELAY_BETWEEN = 3       # seconds between requests
 ADZUNA_PAGES = 2        # Adzuna result pages per query (50 results/page)
+
+# ── Global remote boards (RemoteOK, Remotive) ─────────────────────────────────
+# These return all-remote jobs across every tag, so we filter to roles relevant
+# to a frontend/fullstack search before keeping them.
+REMOTE_BOARDS = True    # set False to skip RemoteOK + Remotive
+RELEVANT_KEYWORDS = [
+    "frontend", "front end", "front-end", "react", "next.js", "nextjs",
+    "typescript", "javascript", "vue", "fullstack", "full stack", "full-stack",
+    "web developer", "web engineer", "ui engineer", "shopify",
+]

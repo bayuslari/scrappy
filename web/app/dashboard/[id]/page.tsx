@@ -7,8 +7,9 @@ import SponsorBadge from "@/components/SponsorBadge";
 import TechBadge from "@/components/TechBadge";
 import JobEditor from "@/components/JobEditor";
 import BackLink from "@/components/BackLink";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { formatPosted } from "@/lib/date";
 
 export const dynamic = "force-dynamic";
 
@@ -64,7 +65,9 @@ export default async function JobDetailPage({
 
             <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500 dark:text-slate-400">
               <TechBadge score={job.tech_score} />
-              {job.date_posted && <span>posted {job.date_posted}</span>}
+              {formatPosted(job.date_posted) && (
+                <span>posted {formatPosted(job.date_posted)}</span>
+              )}
               <span className="capitalize">{job.source}</span>
             </div>
 

@@ -25,9 +25,11 @@ try:
 except ImportError:
     pass
 
-from config import SEARCH_QUERIES, COUNTRIES
+from config import SEARCH_QUERIES, COUNTRIES, REMOTE_BOARDS
 from sources.adzuna import scrape_adzuna, is_configured as adzuna_configured
 from sources.jobspy_scraper import scrape_jobspy, scrape_seek
+from sources.remoteok import scrape_remoteok
+from sources.remotive import scrape_remotive
 from utils.dedup import dedup_and_enrich
 from utils.supabase_client import get_client, upsert_jobs, get_skills
 
@@ -71,6 +73,12 @@ def collect() -> list[dict]:
             # SEEK (AU only).
             if cfg.get("seek"):
                 raw += scrape_seek(query=query, location="Adelaide SA", country=code)
+
+    # Global remote boards (run once, not per country/query).
+    if REMOTE_BOARDS:
+        log.info("🌐  Remote boards (RemoteOK + Remotive)")
+        raw += scrape_remoteok()
+        raw += scrape_remotive()
 
     return raw
 
