@@ -30,6 +30,7 @@ from sources.adzuna import scrape_adzuna, is_configured as adzuna_configured
 from sources.jobspy_scraper import scrape_jobspy, scrape_seek
 from sources.remoteok import scrape_remoteok
 from sources.remotive import scrape_remotive
+from sources.himalayas import scrape_himalayas
 from utils.dedup import dedup_and_enrich
 from utils.supabase_client import get_client, upsert_jobs, get_skills
 
@@ -76,9 +77,10 @@ def collect() -> list[dict]:
 
     # Global remote boards (run once, not per country/query).
     if REMOTE_BOARDS:
-        log.info("🌐  Remote boards (RemoteOK + Remotive)")
+        log.info("🌐  Remote boards (RemoteOK + Remotive + Himalayas)")
         raw += scrape_remoteok()
         raw += scrape_remotive()
+        raw += scrape_himalayas()
 
     return raw
 

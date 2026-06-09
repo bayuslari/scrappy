@@ -12,7 +12,7 @@ Python scraper (GitHub Actions cron, every 12h)
   ├── Adzuna API (official, free — optional)
   ├── Indeed + LinkedIn (python-jobspy)
   ├── SEEK (custom scraper, AU)
-  └── RemoteOK + Remotive (global remote boards, free public APIs)
+  └── RemoteOK + Remotive + Himalayas (global remote boards, free public APIs)
         ↓
    Supabase (Postgres + Auth + RLS)
         ↓
