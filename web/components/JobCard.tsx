@@ -47,8 +47,8 @@ export default function JobCard({ job }: { job: Job }) {
   const isRemote = (job.location ?? "").toLowerCase().includes("remote");
 
   return (
-    <Link href={`/dashboard/${job.id}`} className="block">
-      <Card className="flex gap-3 p-4 transition hover:-translate-y-0.5 hover:shadow-md dark:hover:border-slate-700">
+    <Link href={`/dashboard/${job.id}`} className="block w-full min-w-0">
+      <Card className="flex w-full min-w-0 gap-3 p-4 transition hover:-translate-y-0.5 hover:shadow-md dark:hover:border-slate-700">
         {/* Company avatar */}
         <div
           className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-base font-bold text-white ${avatarFor(company)}`}
