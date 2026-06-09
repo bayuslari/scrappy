@@ -9,6 +9,7 @@ import JobEditor from "@/components/JobEditor";
 import BackLink from "@/components/BackLink";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { formatPosted } from "@/lib/date";
 
 export const dynamic = "force-dynamic";
@@ -40,10 +41,10 @@ export default async function JobDetailPage({
   const salary = formatSalary(job);
 
   return (
-    <main id="main" className="mx-auto max-w-3xl px-4 py-6">
+    <main id="main" className="mx-auto max-w-5xl px-4 py-6">
       <BackLink />
 
-      <div className="mt-3 grid gap-4 md:grid-cols-[1fr_280px]">
+      <div className="mt-3 grid gap-4 md:grid-cols-[1fr_300px]">
         <div>
           <Card className="p-5">
             <div className="flex items-start justify-between gap-3">
@@ -68,7 +69,7 @@ export default async function JobDetailPage({
               {formatPosted(job.date_posted) && (
                 <span>posted {formatPosted(job.date_posted)}</span>
               )}
-              <span className="capitalize">{job.source}</span>
+              <Badge variant="outline" className="capitalize">{job.source}</Badge>
             </div>
 
             {job.tech_hits && (
