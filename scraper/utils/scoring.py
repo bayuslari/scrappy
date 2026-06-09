@@ -9,42 +9,49 @@ Computes:
 import re
 
 # ── Sponsorship signal keywords ───────────────────────────────────────────────
-# Positive — employer explicitly open to sponsorship / migration.
+# Positive — employer EXPLICITLY offers visa sponsorship / migration support.
+# (Relocation assistance is NOT here — it's about moving, not visa rights.)
 SPONSOR_POS = [
     r"visa sponsor",
-    r"sponsorship available",
-    r"sponsorship provided",
-    r"\bsponsorship\b",
-    r"DAMA",
+    r"visa sponsorship",
+    r"sponsorship (is )?(available|offered|provided|possible)",
+    r"(will|willing to|can|able to|happy to|we) sponsor",
+    r"sponsor (your |the )?visa",
+    r"\bDAMA\b",
     r"skilled migration",
     r"\b482\b",
     r"TSS visa",
     r"employer.?sponsored",
-    r"relocation (assistance|support|package)",
-    r"open to relocation",
-    r"will sponsor",
-    r"willing to sponsor",
 ]
 
-# Weak — work-rights mentioned (could go either way).
+# Weak — soft / ambiguous signals (mentioned, but not a clear offer).
 SPONSOR_WEAK = [
     r"work rights",
     r"right to work",
-    r"relocation",
+    r"\brelocation\b",
+    r"relocation (assistance|support|package)",
+    r"open to relocation",
+    r"\bsponsorship\b",   # the word appears but no explicit offer
 ]
 
-# Negative — employer explicitly excludes overseas applicants.
+# Negative — employer EXCLUDES overseas applicants / can't sponsor.
 SPONSOR_NEG = [
-    r"must be (an )?australian citizen",
-    r"australian (citizens?|residents?) only",
+    r"must be (an? )?(australian|uk|u\.k\.|british|us|u\.s\.|american|nz|new zealand) citizen",
+    r"(australian|uk|u\.k\.|british|us|u\.s\.|american|nz|new zealand) citizen(ship)?\b.{0,15}(required|only|essential|mandatory|: ?yes)",
+    r"citizenship required",
+    r"citizens? only",
+    r"must (be a citizen|hold .{0,25}citizenship)",
     r"permanent residents? only",
-    r"no sponsorship",
-    r"must have full.?working rights",
+    r"no (visa )?sponsorship",
+    r"sponsorship (is )?not (available|offered|provided)",
+    r"(not able|unable|cannot|can'?t) to sponsor",
+    r"(do(es)? not|won'?t) (offer|provide|consider) .{0,20}sponsor",
+    r"without (the need for )?(visa )?sponsorship",
+    r"must (already )?have (full |the )?(right to work|working rights)",
     r"must hold (a )?permanent",
     r"clearance required",
     r"security clearance",
-    r"nv1|nv2|baseline clearance",
-    r"australian citizenship (is )?required",
+    r"\bnv1\b|\bnv2\b|baseline clearance",
 ]
 
 # ── Tech stack — matched to Bayu's CV (higher score = better fit) ──────────────

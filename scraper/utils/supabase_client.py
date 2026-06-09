@@ -72,11 +72,13 @@ def get_skills(client) -> list[str]:
 
 
 def upsert_jobs(client, jobs: list[dict]) -> int:
-    """Insert new jobs, ignoring ones that already exist.
+    """Upsert jobs on the (source, external_id) unique constraint.
 
-    We use `ignore_duplicates=True` on the (source, external_id) unique
-    constraint so existing rows — including any user-edited status/notes —
-    are preserved and never overwritten. Returns count of attempted rows.
+    The payload only ever contains scraper-computed columns (title, salary,
+    tech_score, sponsorship_likelihood, ...) — never `status` or `notes`. So a
+    normal upsert UPDATEs those computed columns for existing rows (healing old
+    rows when scoring improves) while Postgres leaves `status`/`notes` — the
+    user-edited fields not in the payload — untouched. Returns attempted rows.
     """
     if not jobs:
         return 0
@@ -87,9 +89,7 @@ def upsert_jobs(client, jobs: list[dict]) -> int:
         batch = jobs[i:i + 200]
         try:
             (client.table("jobs")
-                   .upsert(batch,
-                           on_conflict="source,external_id",
-                           ignore_duplicates=True)
+                   .upsert(batch, on_conflict="source,external_id")
                    .execute())
             inserted += len(batch)
         except Exception as e:  # noqa: BLE001

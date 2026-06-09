@@ -4,6 +4,7 @@ import SponsorBadge from "./SponsorBadge";
 import StatusBadge from "./StatusBadge";
 import TechBadge from "./TechBadge";
 import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { formatPosted, isToday } from "@/lib/date";
 
 function formatSalary(job: Job): string | null {
@@ -84,12 +85,9 @@ export default function JobCard({ job }: { job: Job }) {
           {tags.length > 0 && (
             <div className="mt-2 flex flex-wrap gap-1.5">
               {tags.map((t) => (
-                <span
-                  key={t}
-                  className="rounded-md bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-300"
-                >
+                <Badge key={t} variant="secondary" className="font-medium">
                   {t}
-                </span>
+                </Badge>
               ))}
             </div>
           )}
@@ -106,7 +104,7 @@ export default function JobCard({ job }: { job: Job }) {
                 {posted}
               </span>
             )}
-            <span className="capitalize">{job.source}</span>
+            <Badge variant="outline" className="capitalize">{job.source}</Badge>
           </div>
         </div>
       </Card>
