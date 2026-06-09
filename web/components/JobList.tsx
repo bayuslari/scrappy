@@ -64,7 +64,7 @@ export default function JobList({
 
   return (
     <>
-      <div className="grid gap-3">
+      <div className="grid grid-cols-1 gap-3">
         {jobs.map((job) => (
           <JobCard key={job.id} job={job} />
         ))}
