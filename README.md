@@ -111,5 +111,5 @@ Deploy to a free Vercel subdomain:
 ## Configuration
 
 Edit `scraper/config.py` to change search queries, target countries
-(`AU` / `NZ` / `UK`), locations, and limits. Scoring keywords (tech stack +
+(`AU` / `NZ` / `UK` / `SG` / `MY`), locations, and limits. Scoring keywords (tech stack +
 sponsorship signals) live in `scraper/utils/scoring.py`.

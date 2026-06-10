@@ -13,7 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-const COUNTRIES = ["AU", "NZ", "UK"];
+const COUNTRIES = ["AU", "NZ", "UK", "SG", "MY"];
 const SORTS = [
   { value: "date_posted", label: "Date posted" },
   { value: "tech_score", label: "Tech score" },

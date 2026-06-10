@@ -47,6 +47,20 @@ COUNTRIES = {
         "currency": "GBP",
         "locations": ["London", "Remote, UK"],
     },
+    "SG": {
+        "jobspy_country": "Singapore",
+        "adzuna_code": "sg",
+        "seek": False,
+        "currency": "SGD",
+        "locations": ["Singapore", "Remote, Singapore"],
+    },
+    "MY": {
+        "jobspy_country": "Malaysia",
+        "adzuna_code": None,    # Adzuna doesn't cover Malaysia → JobSpy only
+        "seek": False,
+        "currency": "MYR",
+        "locations": ["Kuala Lumpur", "Remote, Malaysia"],
+    },
 }
 
 # ── Limits / politeness ───────────────────────────────────────────────────────
