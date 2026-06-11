@@ -66,7 +66,7 @@ COUNTRIES = {
 # ── Limits / politeness ───────────────────────────────────────────────────────
 RESULTS_EACH = 25       # results per query per site (keep modest to avoid blocks)
 MAX_AGE_DAYS = 30       # only jobs posted within this many days
-DELAY_BETWEEN = 3       # seconds between requests
+DELAY_BETWEEN = 2       # seconds between requests
 ADZUNA_PAGES = 2        # Adzuna result pages per query (50 results/page)
 
 # ── Global remote boards (RemoteOK, Remotive) ─────────────────────────────────
